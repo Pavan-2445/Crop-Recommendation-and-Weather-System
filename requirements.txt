@@ -4,4 +4,4 @@ requests
 joblib
 geopy
 python-dotenv
-gunicorn
+scikit-learn
