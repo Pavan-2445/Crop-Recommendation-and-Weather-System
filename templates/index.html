@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crop & Weather Prediction</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    .tabs { display: flex; margin-bottom: 1em; }
+    .tab-btn { padding: 0.5em 1em; cursor: pointer; border: 1px solid #51af39b0; background: #4ea946; }
+    .tab-btn.active { background: #e0e0e067; font-weight: bold; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌾 CROP & WEATHER SYSTEM</h1>
+    <div class="tabs">
+      <div class="tab-btn active" onclick="showTab('crop')">Crop Recommendation</div>
+      <div class="tab-btn" onclick="showTab('weather')">Weather Prediction</div>
+    </div>
+    <div id="crop" class="tab-content active">
+      <h2>Crop Recommendation System</h2>
+      <form method="POST" action="/">
+        <div class="form-grid">
+          <div>
+            <label>Nitrogen (N)</label>
+            <input type="number" name="nitrogen" step="1" min="0" max="200" required value="{{ form_data.nitrogen }}">
+          </div>
+          <div>
+            <label>Phosphorus (P)</label>
+            <input type="number" name="phosphorus" step="1" min="0" max="200" required value="{{ form_data.phosphorus }}">
+          </div>
+          <div>
+            <label>Potassium (K)</label>
+            <input type="number" name="potassium" step="1" min="0" max="200" required value="{{ form_data.potassium }}">
+          </div>
+          <div>
+            <label>Soil pH</label>
+            <input type="number" name="ph" step="0.01" min="0" max="14" required value="{{ form_data.ph }}">
+          </div>
+          <div>
+            <label>Temperature (°C)</label>
+            <input type="number" name="temperature" step="0.1" min="-10" max="60" required value="{{ form_data.temperature }}">
+          </div>
+          <div>
+            <label>Humidity (%)</label>
+            <input type="number" name="humidity" step="0.1" min="0" max="100" required value="{{ form_data.humidity }}">
+          </div>
+          <div>
+            <label>Rainfall (mm)</label>
+            <input type="number" name="rainfall" step="0.1" min="0" max="500" required value="{{ form_data.rainfall }}">
+          </div>
+        </div>
+        <button type="submit">Recommend Crop</button>
+      </form>
+      {% if prediction %}
+        <div class="result">
+          <strong>Recommended Crop:</strong> {{ prediction }}
+        </div>
+      {% endif %}
+    </div>
+    <div id="weather" class="tab-content">
+      <h2>Weather Prediction</h2>
+      <form method="POST" action="/weather">
+        <div>
+          <label for="city">Enter your City, Village or Pincode</label>
+          <input type="text" name="city" placeholder="Eg., Guntur" class="form-control" required>
+        </div>
+        <button type="submit">Get Weather</button>
+      </form>
+      {% if weather %}
+        <div class="result">
+          <strong>Weather for {{ weather.city }}:</strong><br>
+          Temperature: {{ weather.temp }} °C<br>
+          Humidity: {{ weather.humidity }} %<br>
+          Description: {{ weather.description }}<br>
+        </div>
+      {% elif weather_error %}
+        <div class="result">
+          <strong>Error:</strong> {{ weather_error }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  <script>
+    function showTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', btn.textContent.includes(tab.charAt(0).toUpperCase() + tab.slice(1)));
+      });
+      document.querySelectorAll('.tab-content').forEach(div => {
+        div.classList.toggle('active', div.id === tab);
+      });
+    }
+    // On page load, activate the correct tab from Flask
+    window.onload = function() {
+      var activeTab = '{{ active_tab if active_tab else "crop" }}';
+      showTab(activeTab);
+    };
+  </script>
+</body>
+</html>
