@@ -1,8 +1,12 @@
+import os
+from dotenv import load_dotenv
 from flask import Flask, render_template, request
 import joblib
 import numpy as np
 import requests
 
+
+load_dotenv()  # Load environment variables from .env
 
 app = Flask(__name__)
 
@@ -81,7 +85,9 @@ def weather():
             lon = nom_data[0]['lon']
 
             # 2. Use WeatherAPI.com to get weather
-            WEATHER_API_KEY = "0af6240444ce4b338ee84240251007"  # <-- Your WeatherAPI.com key
+            WEATHER_API_KEY = os.environ.get("WEATHER_API_KEY")
+            if not WEATHER_API_KEY:
+                raise Exception("Weather API key not set in environment.")
             weather_url = f"http://api.weatherapi.com/v1/current.json"
             weather_params = {
                 'key': WEATHER_API_KEY,
