@@ -109,4 +109,4 @@ def weather():
     return render_template("index.html", weather=weather, weather_error=weather_error, active_tab='weather', form_data=form_data)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
